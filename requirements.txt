@@ -1,5 +1,6 @@
 flask>=3.0.0
 python-dotenv>=1.0.1
+flask-cors>=3.0.10
 
 # LLM via LangChain + Mistral API
 langchain-core>=0.3.0
