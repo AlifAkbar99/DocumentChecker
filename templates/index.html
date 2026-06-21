@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berkas Beres — AI Document Checker</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="brand-mark">&#10003;</span>
+        <span class="brand-name">Berkas Beres</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="locale-switcher">
+          <label for="langSelect" id="langLabel" data-i18n="languageLabel">Language</label>
+          <select id="langSelect">
+            <option value="en">English</option>
+            <option value="id">Indonesia</option>
+            <option value="ms">Malaysia</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <nav class="stepper" id="stepper">
+      <div class="step-dot active" data-step="0"><span>1</span><label data-i18n="stepRole">Role</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="1"><span>2</span><label data-i18n="stepGuideline">Guideline</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="2"><span>3</span><label data-i18n="stepDocuments">Documents</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="3"><span>4</span><label data-i18n="stepCheck">Check</label></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="4"><span>5</span><label data-i18n="stepComplete">Complete</label></div>
+    </nav>
+  </header>
+
+  <main class="screen-wrap">
+    <section class="screen active" id="screen-0">
+      <div class="screen-inner narrow">
+        <p class="eyebrow" data-i18n="stepCounter" data-step-number="1">Step 1 of 5</p>
+        <h1 id="headingRole" data-i18n="headingRole">Which role are you applying as?</h1>
+        <p class="lede" id="ledeRole" data-i18n="ledeRole">This determines which requirements are relevant for you — some application guides have different documents for students and professionals.</p>
+
+        <div class="role-grid">
+          <button class="role-card" data-role="mahasiswa">
+            <span class="role-icon">&#127891;</span>
+            <span class="role-title" data-i18n="roleStudent">Student</span>
+            <span class="role-desc" data-i18n="roleStudentDesc">Applications via campus — PKM, scholarships, community programs, etc.</span>
+          </button>
+          <button class="role-card" data-role="pekerja">
+            <span class="role-icon">&#128188;</span>
+            <span class="role-title" data-i18n="roleWorker">Worker / Professional</span>
+            <span class="role-desc" data-i18n="roleWorkerDesc">Applications via company/institution — advanced study funding, grants, etc.</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: UPLOAD GUIDELINE -->
+    <section class="screen" id="screen-1">
+      <div class="screen-inner narrow">
+        <p class="eyebrow" data-i18n="stepCounter" data-step-number="2">Step 2 of 5</p>
+        <h1 id="headingGuideline" data-i18n="headingGuideline">Upload guideline document</h1>
+        <p class="lede" id="ledeGuideline" data-i18n="ledeGuideline">Official document that contains the application requirements. Example: PKM guide, scholarship guideline, etc. Format: PDF, DOCX, or photo/scan (PNG/JPG).</p>
+
+        <div class="dropzone" id="dropzone-guideline">
+          <input type="file" id="fileGuideline" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg" hidden>
+          <div class="dropzone-content">
+            <span class="dropzone-icon">&#128196;</span>
+            <p><strong data-i18n="dropzoneClick">Click to choose a file</strong> <span data-i18n="dropzoneOr">or</span> drag &amp; drop here</p>
+            <p class="dropzone-hint" data-i18n="dropzoneHint">One file, up to 20MB</p>
+          </div>
+        </div>
+        <div class="file-chip" id="guidelineFileChip" style="display:none;"></div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="btnAnalyzeGuideline" disabled data-i18n="btnAnalyzeGuideline">Read &amp; analyze guideline</button>
+        </div>
+
+        <div class="checklist-preview" id="checklistPreview" style="display:none;">
+          <h3 data-i18n="checklistTitle">AI-detected checklist</h3>
+          <p class="muted" data-i18n="checklistHint">These are the requirements the AI found in your guideline, filtered for the selected status <strong id="rolePreviewLabel"></strong>. Continue when they look correct.</p>
+          <ul class="req-list" id="checklistItems"></ul>
+          <div class="action-row">
+            <button class="btn btn-primary" id="btnToStep2" data-i18n="btnToStep2">Continue: upload my documents</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: UPLOAD USER DOCUMENTS -->
+    <section class="screen" id="screen-2">
+      <div class="screen-inner narrow">
+        <p class="eyebrow" data-i18n="stepCounter" data-step-number="3">Step 3 of 5</p>
+        <h1 id="headingDocuments" data-i18n="headingDocuments">Upload the documents you already have</h1>
+        <p class="lede" id="ledeDocuments" data-i18n="ledeDocuments">Upload all documents you currently have — certificates, letters, transcripts, ID, etc. You can upload multiple files. The AI will compare these with the checklist.</p>
+
+        <div class="dropzone" id="dropzone-documents">
+          <input type="file" id="fileDocuments" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg" multiple hidden>
+          <div class="dropzone-content">
+            <span class="dropzone-icon">&#128193;</span>
+            <p><strong data-i18n="dropzoneFilesClick">Click to choose files</strong> <span data-i18n="dropzoneOr">or</span> drag &amp; drop here</p>
+            <p class="dropzone-hint" data-i18n="dropzoneFilesHint">Multiple files allowed</p>
+          </div>
+        </div>
+
+        <ul class="file-list" id="documentFileList"></ul>
+
+        <div class="action-row">
+          <button class="btn btn-secondary" id="btnSkipDocs" data-i18n="btnSkipDocs">Skip, I don't have any documents yet</button>
+          <button class="btn btn-primary" id="btnRunCheck" disabled data-i18n="btnRunCheck">Check my document completeness</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: CHECK RESULTS -->
+    <section class="screen" id="screen-3">
+      <div class="screen-inner">
+        <p class="eyebrow" data-i18n="stepCounter" data-step-number="4">Step 4 of 5</p>
+        <h1 id="headingCheck" data-i18n="headingCheck">Check results</h1>
+        <p class="lede" id="checkSummaryText" data-i18n="checkSummaryText">AI is comparing your documents to the checklist...</p>
+
+        <div class="result-list" id="resultList"></div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="btnGoToGenerate" disabled data-i18n="btnGoToGenerate">
+            Generate missing documents
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: GENERATE & REVIEW -->
+    <section class="screen" id="screen-4">
+      <div class="screen-inner">
+        <p class="eyebrow" data-i18n="stepCounter" data-step-number="5">Step 5 of 5</p>
+        <h1 id="headingComplete" data-i18n="headingComplete">Complete missing documents</h1>
+        <p class="lede" id="ledeComplete" data-i18n="ledeComplete">The AI creates drafts for documents you still need. Personal or sensitive data that the AI does not know will be marked as <code>[PLACEHOLDER]</code> — be sure to replace all placeholders with real data before using the documents officially.</p>
+
+        <div class="generate-dashboard">
+          <h2 data-i18n="generateSelectionTitle">Pick documents to generate</h2>
+          <p class="muted" data-i18n="generateSelectionHint">Select the missing documents you want the AI to draft. Private data will stay as placeholders for you to fill locally.</p>
+          <ul class="generate-list" id="generateList"></ul>
+        </div>
+
+        <div class="context-box">
+          <label for="contextNotes" id="contextNotesLabel" data-i18n="contextNotesLabel">Additional notes for AI (optional)</label>
+          <textarea id="contextNotes" placeholder="Example: program name, proposal title, university name, etc. Helps the AI make the draft more accurate." data-i18n-placeholder="contextNotesPlaceholder"></textarea>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="btnGenerateDrafts" data-i18n="btnGenerateDrafts">Generate drafts now</button>
+        </div>
+
+        <div class="drafts-area" id="draftsArea"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
